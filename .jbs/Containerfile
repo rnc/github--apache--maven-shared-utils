@@ -1,0 +1,11 @@
+FROM quay.io/redhat-user-workloads/konflux-jbs-pnc-tenant/jvm-build-service-builder-images/ubi8:026b26ba92b1d56ffcd172e7785e679437fcff70
+USER 0
+WORKDIR /var/workdir
+RUN mkdir -p /var/workdir/software/settings /original-content/marker
+ARG CACHE_URL=""
+ENV CACHE_URL=$CACHE_URL
+COPY .jbs/run-build.sh /var/workdir
+COPY . /var/workdir/workspace/source/
+RUN /var/workdir/run-build.sh
+FROM scratch
+COPY --from=0 /var/workdir/workspace/artifacts /
